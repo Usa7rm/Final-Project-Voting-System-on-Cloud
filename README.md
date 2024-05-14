@@ -1,80 +1,95 @@
-# Cloud Services Infrastructure Voting System Project
-Welcome to the Voting System project! This is a comprehensive solution designed to manage and conduct secure online voting. The system is built using modern technologies such as React for the frontend and Python Flask for backend services, all containerized with Docker and orchestrated through Kubernetes for scalability and reliability. This document will guide you through the architecture, setup, and deployment of the system.
+#Cloud-Based Voting System
+Welcome! This system is designed to provide a secure, scalable, and user-friendly platform for conducting digital elections. Utilizing the latest in cloud technologies and microservices architecture, our project aims to modernize and enhance the integrity and accessibility of voting processes.
 
-Overview
-The Voting System allows users to securely register, login, cast votes for candidates, and view voting results. It consists of multiple microservices, each responsible for handling different aspects of the system:
-
-Authentication Service: Manages user authentication and session management.
-Voting Service: Handles all vote casting operations.
-Results Service: Computes and displays voting results.
-Frontend Service: Provides a user-friendly web interface.
-Architecture
-The project is structured as follows:
-
-css
-Copy code
-Voting System/
-├── authentication_service/
-│   ├── Dockerfile
-│   └── app.py
-├── voting_service/
-│   ├── Dockerfile
-│   └── app.py
-├── results_service/
-│   ├── Dockerfile
-│   └── app.py
-├── frontend/
-│   ├── Dockerfile
-│   └── src/
-├── kubernetes/
-│   ├── deployment.yaml
-│   └── service.yaml
-└── docker-compose.yml
-Each service is containerized using Docker, making it easy to deploy and scale across different environments including local development and cloud platforms like AWS.
+Project Overview
+Our voting system facilitates the entire electoral process, enabling candidates to register, voters to securely cast their votes, and administrators to manage elections, all hosted on the cloud for maximum efficiency and reliability.
 
 Features
-User Authentication: Secure login and registration system.
-Real-time Voting: Cast votes and see updates in real-time.
-Results Calculation: Automated calculation and display of voting results.
-High Availability: Built on Kubernetes for fault tolerance and high availability.
+User Registration and Authentication: Secure sign-up and login process for voters and candidates.
+Voting Interface: Simple and intuitive interface for voters to easily select candidates and submit their votes.
+Admin Dashboard: Enables administrators to set up elections, monitor voting in real-time, and access results.
+Results Display: Election results are calculated and displayed dynamically with graphical representations.
+Technologies Used
+Frontend: React.js and Material-UI for a responsive user interface.
+Backend: Node.js with Express for efficient request handling.
+Database: Amazon RDS for reliable data storage and management.
+Containerization: Docker for creating containerized applications.
+Orchestration: Kubernetes on Amazon EKS for managing service deployments.
+CI/CD: GitHub Actions for continuous integration and deployment.
+Load Balancing: AWS Elastic Load Balancer to distribute incoming traffic.
+Getting Started
+These instructions will help you get a copy of the project up and running on your local machine for development and testing purposes.
+
 Prerequisites
-To run this project, you will need:
+You need to have Docker, Node.js, and npm installed on your machine to build and run the project.
 
-Docker: For creating and managing containers.
-Kubernetes: For orchestrating the containers.
-AWS Account: For deploying the project using AWS services (optional for local development).
-Local Deployment
-To run the Voting System locally:
-
-Clone the repository:
 bash
 Copy code
-git clone https://github.com/your-username/voting-system.git
-Navigate to the project directory:
+npm install npm@latest -g
+Deployment Instructions
+Follow these steps to deploy the project on AWS using Docker and Amazon ECR.
+
+Step 1: Build the Docker Images
+Navigate to the directories containing the Dockerfiles for each service and build the images. Here's how you can build and tag each image:
+
 bash
 Copy code
-cd voting-system
-Build and run the containers:
+# For the authentication service
+cd path_to_authentication_service/
+docker build -t authentication-service:latest .
+
+# For the voting service
+cd path_to_voting_service/
+docker build -t voting-service:latest .
+
+# For the results service
+cd path_to_results_service/
+docker build -t results-service:latest .
+
+# For the frontend service
+cd path_to_frontend/
+docker build -t frontend-service:latest .
+Step 2: Tag the Images for ECR
+Tag each image with the full repository URI, replacing $AWS_ACCOUNT_ID with your AWS account ID and $REGION with your AWS region.
+
 bash
 Copy code
-docker-compose up --build
-This will start all the services locally. You can access the frontend by navigating to http://localhost:3000 in your web browser.
+docker tag authentication-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/authentication-service:latest
+docker tag voting-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/voting-service:latest
+docker tag results-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/results-service:latest
+docker tag frontend-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/frontend-service:latest
+Step 3: Push the Images to ECR
+Authenticate your Docker client to your ECR registry and push the images.
 
-Deploying to AWS
-To deploy the system on AWS, follow these steps:
-
-Push Docker images to Amazon ECR.
-Create a Kubernetes cluster using Amazon EKS.
-Deploy the services using kubectl:
 bash
 Copy code
-kubectl apply -f kubernetes/
-Refer to the AWS documentation for detailed instructions on setting up EKS and ECR.
+# Log in to ECR
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
+# Push each image
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/authentication-service:latest
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/voting-service:latest
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/results-service:latest
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/frontend-service:latest
+Step 4: Update Your Kubernetes Deployments
+Update your Kubernetes deployment configurations to use the new image versions.
+
+Step 5: Apply the Changes in Kubernetes
+Use kubectl to apply the changes in your Kubernetes cluster.
+
+bash
+Copy code
+kubectl apply -f deployment.yaml
+To force Kubernetes to pull the latest images, if necessary:
+
+bash
+Copy code
+kubectl rollout restart deployment <deployment-name>
 Contributing
-Contributions are welcome! If you'd like to contribute, please fork the repository and use a feature branch. Pull requests are warmly welcome.
+Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests to us.
 
-Links
-Repository: https://github.com/your-username/voting-system
-Issue tracker: https://github.com/your-username/voting-system/issues
-In case of sensitive bugs like security vulnerabilities, please contact [your-email@example.com] directly instead of using issue tracker. We value your effort to improve the security and privacy of this project!
+Authors
+Usairum - Frontend and Cloud Integration
+Subabay - Frontend and Reporting
+Nouman - Backend and Cloud Integration
+Umar - Reporting and Diagramming
